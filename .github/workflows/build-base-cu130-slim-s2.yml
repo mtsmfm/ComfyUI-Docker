@@ -17,6 +17,9 @@ jobs:
   build-publish-base-cu130-slim-s2:
     environment: Publish to Docker Hub
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     steps:
       -
         name: Get current date
@@ -38,6 +41,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_ACCESSTOKEN }}
       -
+        name: Login to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      -
         name: Build and push 'base-cu130-slim-s2'
         uses: docker/build-push-action@v6
         with:
@@ -48,4 +58,6 @@ jobs:
           tags: |
             yanwk/comfyui-boot:base-cu130-slim-s2
             yanwk/comfyui-boot:base-cu130-slim-s2-${{ steps.date.outputs.date }}
+            ghcr.io/yanwenkun/comfyui-boot:base-cu130-slim-s2
+            ghcr.io/yanwenkun/comfyui-boot:base-cu130-slim-s2-${{ steps.date.outputs.date }}
           push: true
